@@ -104,6 +104,63 @@
     
     <!-- Snippet: legacy-headEnd-qvO2M16v5 --><script defer data-domain="davinci.vote" src="https://plausible.io/js/script.tagged-events.js"></script>
 <script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script><!-- SnippetEnd: legacy-headEnd-qvO2M16v5 --><!-- End of headEnd -->
+
+
+<style>
+/* === NAVBAR OVERRIDE === */
+/* Page background color: rgb(235, 210, 178) / #ebd2b2 */
+
+/* Default state (at top): transparent */
+html.nav-default .framer-mpnl49-container .framer-rrhcJ .framer-11k8h8t {
+  background-color: rgba(250, 243, 235, 0) !important;
+}
+html.nav-default .framer-mpnl49-container .framer-rrhcJ {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Scrolled state: solid bg with blur */
+html.nav-scrolled .framer-mpnl49-container .framer-rrhcJ .framer-11k8h8t {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+html.nav-scrolled .framer-mpnl49-container .framer-rrhcJ {
+  background: transparent !important;
+}
+
+/* Logo section (hero): hide when scrolled (logo moves into menubar) */
+html.nav-scrolled .framer-siiun0 .framer-mxqk6 { opacity: 0 !important; pointer-events: none !important; }
+html.nav-default .framer-siiun0 .framer-mxqk6 { opacity: 1 !important; pointer-events: auto !important; }
+
+/* Any dynamically-copied logo inside menubar: show when scrolled, hide at top */
+html.nav-scrolled .framer-mpnl49-container .framer-mxqk6 { display: inline-flex !important; }
+/* Hide any extra element inserted before nav links in menubar */
+html.nav-default .framer-mpnl49-container .framer-rrhcJ .framer-11k8h8t > :first-child:not(.framer-2604sh) { display: none !important; }
+html.nav-default .framer-mpnl49-container .framer-rrhcJ .framer-2604sh ~ * { display: none !important; }
+</style>
+<script>
+(function(){
+  var scrollY = window.scrollY;
+  var html = document.documentElement;
+  
+  function update() {
+    scrollY = window.scrollY;
+    html.classList.toggle('nav-scrolled', scrollY > 0);
+    html.classList.toggle('nav-default', scrollY <= 0);
+  }
+  
+  window.addEventListener('scroll', function() {
+    requestAnimationFrame(update);
+  }, {passive: true});
+  
+  update();
+})();
+</script>
+
 </head>
 <body>
 	
@@ -145,5 +202,54 @@ In summary, DAVINCI is the first solution that meets all the criteria for a univ
 <!-- SnippetEnd: legacy-bodyEnd -->
 
     <!-- End of bodyEnd -->
+
+<script>
+</script>
+
+
+<script>
+(function(){
+  var navInner = null, origInnerStyle = null;
+  var navContainer = null, origContainerStyle = null;
+  
+  var check = setInterval(function() {
+    if (!navContainer) navContainer = document.querySelector('.framer-mpnl49-container');
+    if (navContainer && !navInner) navInner = navContainer.querySelector('.framer-rrhcJ');
+    if (navInner && !origInnerStyle) {
+      origInnerStyle = navInner.getAttribute('style') || '';
+    }
+    if (navContainer && navInner && origInnerStyle) clearInterval(check);
+  }, 100);
+  
+  var ticking = false;
+  function enforceTopStyles() {
+    if (window.scrollY <= 0 && navInner && origInnerStyle) {
+      navInner.setAttribute('style', origInnerStyle);
+      var innerDiv = navInner.querySelector('.framer-11k8h8t');
+      if (innerDiv) {
+        innerDiv.style.backgroundColor = '';
+        innerDiv.style.backdropFilter = '';
+        innerDiv.style.boxShadow = '';
+      }
+    }
+    ticking = false;
+  }
+  
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(enforceTopStyles);
+      ticking = true;
+    }
+  }, {passive: true});
+  
+  // Also run on every animation frame when scrolled to top
+  function perpetualCheck() {
+    if (window.scrollY <= 0) enforceTopStyles();
+    requestAnimationFrame(perpetualCheck);
+  }
+  requestAnimationFrame(perpetualCheck);
+})();
+</script>
+
 </body>
 </html>
